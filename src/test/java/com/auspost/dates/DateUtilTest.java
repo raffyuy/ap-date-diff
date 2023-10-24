@@ -2,6 +2,7 @@ package com.auspost.dates;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
@@ -50,11 +51,48 @@ class DateUtilTest {
     }
 
 
+    @Test
+    void dateDiff_partialYearIsLeapYear() {
+        LocalDate dateBefore = LocalDate.of(2000, 5, 11);
+        LocalDate dateAfter = LocalDate.of(2004, 2, 22);
+
+        doDateDiffAssertion(dateBefore, dateAfter);
+    }
+
+
+    @Test
+    void dateDiff_partialYearIsLeapYear2() {
+        LocalDate dateBefore = LocalDate.of(1999, 4, 11);
+        LocalDate dateAfter = LocalDate.of(2000, 3, 22);
+
+        doDateDiffAssertion(dateBefore, dateAfter);
+    }
+
+
+
     private int doDateDiffAssertion(LocalDate dateBefore, LocalDate dateAfter) {
         int diff = DateUtil.dateDiff(dateBefore.format(formatter), dateAfter.format(formatter));
 
         assertEquals(DAYS.between(dateBefore, dateAfter), diff);
         return diff;
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({
+            "1900,1901,0",
+            "2000,2000,0",
+            "2000,2001,1",
+            "1999,2000,0",
+            "2000,2005,2",
+            "2000,2021,6"
+    })
+    void findNumberOfLeapYears(int year1, int year2, int expected) {
+        CustomDate date1 = new CustomDate(1, 1, year1);
+        CustomDate date2 = new CustomDate(1, 1, year2);
+        int numberOfLeapYears = DateUtil.findNumberOfLeapYears(date1, date2);
+
+        assertEquals(expected, numberOfLeapYears);
     }
 
     @ParameterizedTest
@@ -84,7 +122,6 @@ class DateUtilTest {
     void getDaysInCurrentYear() {
         CustomDate date = new CustomDate(22,3,2001);
         int days = DateUtil.getDaysInCurrentYear(date);
-//        System.out.println(days);
 
     }
 }

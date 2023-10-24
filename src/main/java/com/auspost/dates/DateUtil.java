@@ -2,13 +2,10 @@ package com.auspost.dates;
 
 public class DateUtil {
 
-
-//    Each month has 28, 30, or 31 days during a normal year, which has 365 days.
-//    A leap year occurs nearly every 4 years which adds an extra day to February.
 //    February is the only month with 28 days.
 //    There are 30 days in April, June, September and November.
 //    There are 31 days in January, March, May, July, August, October, December.
-    private static final int[] daysInMonth = new int[] {
+    private static final int[] daysInMonthInCommonYear = new int[] {
             31, // Jan
             28, // Feb
             31, // March
@@ -22,18 +19,35 @@ public class DateUtil {
             30, // November
             31, // December
     };
-    public static int dateDiff(String date1, String date2) {
-        CustomDate cd1 = parseDateString(date1);
-        CustomDate cd2 = parseDateString(date2);
 
-        int daysDiff = getDaysInCurrentYear(cd2) - getDaysInCurrentYear(cd1);
-        int numLeapYears = findNumberOfLeapYears(cd1, cd2);
+    /**
+     * Gets the number of days in between two dates
+     * @param earlierDate
+     * @param laterDate
+     * @return int number of days
+     */
+    public static int dateDiff(String earlierDate, String laterDate) {
+        CustomDate earlier = parseDateString(earlierDate);
+        CustomDate later = parseDateString(laterDate);
 
-        int numNonLeapYears = Math.abs(cd1.getYear() - cd2.getYear()) - numLeapYears;
+        // calculate the days in the partial years first
+        int daysDiff = getDaysInCurrentYear(later) - getDaysInCurrentYear(earlier);
+
+        // calculate the days in the full years, if any
+        int numLeapYears = findNumberOfLeapYears(earlier, later);
+        int numNonLeapYears = later.getYear() - earlier.getYear() - numLeapYears;
+
+        // add it all up
         daysDiff += (numNonLeapYears * 365) + (numLeapYears * 366);
         return daysDiff;
     }
 
+    /**
+     * Counts the number of leap years between two dates, upperbound exclusive
+     * @param date1
+     * @param date2
+     * @return
+     */
     public static int findNumberOfLeapYears(CustomDate date1, CustomDate date2) {
         int floorYear = Math.min(date1.getYear(), date2.getYear());
         int ceilingYear = Math.max(date1.getYear(), date2.getYear());
@@ -54,8 +68,8 @@ public class DateUtil {
         int total = date.getDay();
         int prevMonthIndex = date.getMonth() - 2; // -2 because -1 index offset -1 month
         for (int i = prevMonthIndex; i >= 0; i--) {
-            total += daysInMonth[i];
-            if (i == 1 && isLeapYear(date.getYear())) {
+            total += daysInMonthInCommonYear[i];
+            if (i == 1 && isLeapYear(date.getYear())) { // Feb
                 total += 1;
             }
         }
@@ -65,15 +79,19 @@ public class DateUtil {
 
 
     /**
-     * Rules for determining if it's a leap year:
-     * The year is evenly divisible by 4;
-     * If the year can be evenly divided by 100, it is NOT a leap year, unless;
-     * The year is also evenly divisible by 400. Then it is a leap year.
+     * https://www.timeanddate.com/date/leapyear.html
      *
+     * In our modern-day Gregorian calendar, three criteria must be taken into account to identify leap years:
+     * The year must be evenly divisible by 4;
+     * If the year can also be evenly divided by 100, it is not a leap year;
+     * unless...
+     * The year is also evenly divisible by 400. Then it is a leap year.
+     * According to these rules, the years 2000 and 2400 are leap years,
+     * while 1800, 1900, 2100, 2200, 2300, and 2500 are not leap years.
      */
     public static boolean isLeapYear(int year) {
-        return (year % 100 == 0 && year % 400 == 0) ||
-                (year % 100 != 0 && year % 4 == 0);
+        return (year % 100 == 0 && year % 400 == 0) || // centuries
+                (year % 100 != 0 && year % 4 == 0); // other years
     }
 
 
