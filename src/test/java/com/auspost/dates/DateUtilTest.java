@@ -1,5 +1,7 @@
 package com.auspost.dates;
 
+import com.auspost.dates.util.CustomDate;
+import com.auspost.dates.util.DateUtil;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -7,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.stream.IntStream;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,13 +62,20 @@ class DateUtilTest {
 
 
     @Test
-    void dateDiff_partialYearIsLeapYear2() {
-        LocalDate dateBefore = LocalDate.of(1999, 4, 11);
-        LocalDate dateAfter = LocalDate.of(2000, 3, 22);
+    void dateDiff_earlierPartialYearIsLeapYear() {
+        LocalDate dateBefore = LocalDate.of(2000, 1, 1);
+        LocalDate dateAfter = LocalDate.of(2001, 1, 1);
 
         doDateDiffAssertion(dateBefore, dateAfter);
     }
 
+    @Test
+    void dateDiff_laterPartialYearIsLeapYear() {
+        LocalDate dateBefore = LocalDate.of(1999, 1, 1);
+        LocalDate dateAfter = LocalDate.of(2000, 1, 1);
+
+        doDateDiffAssertion(dateBefore, dateAfter);
+    }
 
 
     private int doDateDiffAssertion(LocalDate dateBefore, LocalDate dateAfter) {

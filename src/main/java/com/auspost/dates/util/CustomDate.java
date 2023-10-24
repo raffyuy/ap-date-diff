@@ -1,4 +1,4 @@
-package com.auspost.dates;
+package com.auspost.dates.util;
 
 public class CustomDate {
     private int day;

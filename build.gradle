@@ -1,22 +1,28 @@
 plugins {
-    id 'java'
+    id "application"
+}
+apply plugin : "java"
+
+group 'com.auspost'
+version '1.0-SNAPSHOT'
+
+ext {
+    javaMainClass = "com.auspost.dates.Application"
 }
 
-group 'org.example'
-version '1.0-SNAPSHOT'
+application {
+    mainClass.set(javaMainClass)
+}
 
 repositories {
     mavenCentral()
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
 dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
 }
